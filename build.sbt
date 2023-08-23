@@ -1,57 +1,94 @@
 ThisBuild / scalaVersion := "3.3.0"
 
-lazy val scalacOptions = Seq("-Xmax-inlines", "50")
+ThisBuild / organization := "com.clairvoyant.data.scalaxy"
 
-// ----- VARIABLES ----- //
+ThisBuild / credentials += Credentials(
+  "GitHub Package Registry",
+  "maven.pkg.github.com",
+  System.getenv("GITHUB_USERNAME"),
+  System.getenv("GITHUB_TOKEN")
+)
 
-val organizationName = "com.clairvoyant"
-val projectName = "<repo_name>"
-val releaseVersion = "1.0.0"
+// ----- RESOLVERS ----- //
 
-val scalaTestVersion = "3.2.15"
-val scalaXmlVersion = "2.1.0"
-val scalaParserCombinatorsVersion = "2.2.0"
+ThisBuild / resolvers ++= Seq(
+  "DataScalaxyTestUtil Repo" at "https://maven.pkg.github.com/teamclairvoyant/data-scalaxy-test-util/"
+)
+
+// ----- PUBLISH TO GITHUB PACKAGES ----- //
+
+ThisBuild / publishTo := Some(
+  "Github Repo" at s"https://maven.pkg.github.com/teamclairvoyant/data-scalaxy-reader/"
+)
+
+// ----- SCALAFIX ----- //
+
+ThisBuild / semanticdbEnabled := true
+ThisBuild / scalafixOnCompile := true
+
+// ----- WARTREMOVER ----- //
+
+ThisBuild / wartremoverErrors ++= Warts.allBut(
+  Wart.DefaultArguments,
+  Wart.Equals,
+  Wart.FinalCaseClass,
+  Wart.ImplicitParameter,
+  Wart.Overloading,
+  Wart.ToString
+)
+
+// ----- TOOL VERSIONS ----- //
+
+val dataScalaxyTestUtilVersion = "1.0.0"
+val scalaParserCombinatorsVersion = "2.3.0"
+val sparkVersion = "3.4.1"
+val sparkXMLVersion = "0.16.0"
+val zioConfigVersion = "4.0.0-RC16"
 
 // ----- TOOL DEPENDENCIES ----- //
 
-val scalaTestDependencies = Seq("org.scalatest" %% "scalatest" % scalaTestVersion)
-
-val scalaXmlDependencies = Seq("org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion)
+val dataScalaxyTestUtilDependencies = Seq(
+  "com.clairvoyant.data.scalaxy" %% "test-util" % dataScalaxyTestUtilVersion % Test
+)
 
 val scalaParserCombinatorsDependencies = Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % scalaParserCombinatorsVersion
 )
 
+val sparkDependencies = Seq(
+  "org.apache.spark" %% "spark-core" % sparkVersion,
+  "org.apache.spark" %% "spark-sql" % sparkVersion
+)
+  .map(_ excludeAll ("org.scala-lang.modules", "scala-xml"))
+  .map(_.cross(CrossVersion.for3Use2_13))
+
+val sparkXMLDependencies = Seq(
+  "com.databricks" %% "spark-xml" % sparkXMLVersion
+).map(_.cross(CrossVersion.for3Use2_13))
+
+val zioConfigDependencies = Seq(
+  "dev.zio" %% "zio-config-magnolia" % zioConfigVersion
+).map(_ excludeAll ("org.scala-lang.modules", "scala-collection-compat"))
+
 // ----- MODULE DEPENDENCIES ----- //
 
-val rootDependencies =
-  scalaTestDependencies.map(_ % "it,test") ++
-    scalaXmlDependencies ++
-    scalaParserCombinatorsDependencies
-
-// ----- SETTINGS ----- //
-
-val rootSettings =
-  Seq(
-    organization := organizationName,
-    version := releaseVersion,
-    Keys.scalacOptions ++= scalacOptions,
-    libraryDependencies ++= rootDependencies
-  ) ++ Defaults.itSettings
+val textDependencies =
+  dataScalaxyTestUtilDependencies ++
+    sparkDependencies ++
+    sparkXMLDependencies ++
+    zioConfigDependencies
 
 // ----- PROJECTS ----- //
 
-lazy val root = (project in file("."))
-  .configs(IntegrationTest)
-  .settings(rootSettings)
+lazy val `data-scalaxy-reader` = (project in file("."))
+  .settings(
+    publish / skip := true,
+    publishLocal / skip := true
+  )
+  .aggregate(`reader-text`)
 
-// ----- PUBLISH TO GITHUB PACKAGES ----- //
-
-ThisBuild / publishTo := Some("Github Repo" at s"https://maven.pkg.github.com/teamclairvoyant/$projectName/")
-
-ThisBuild / credentials += Credentials(
-  "GitHub Package Registry",
-  "maven.pkg.github.com",
-  "teamclairvoyant",
-  System.getenv("GITHUB_TOKEN")
-)
+lazy val `reader-text` = (project in file("text"))
+  .settings(
+    version := "1.0.0",
+    libraryDependencies ++= textDependencies
+  )
