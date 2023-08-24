@@ -1,4 +1,4 @@
-# data-scalaxy-reader-text
+# data-scalaxy-reader
 
 This library contains several APIs to read data from various sources of different formats and parse it to spark dataframe.
 
