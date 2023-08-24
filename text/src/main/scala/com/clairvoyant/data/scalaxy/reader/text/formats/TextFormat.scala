@@ -53,6 +53,7 @@ case class JSONTextFormat(
     allowUnquotedControlChars: Boolean = false,
     allowUnquotedFieldNames: Boolean = false,
     columnNameOfCorruptRecord: String = "_corrupt_record",
+    dataColumnName: Option[String] = None,
     dateFormat: String = "yyyy-MM-dd",
     dropFieldIfAllNull: Boolean = false,
     enableDateTimeParsingFallback: Boolean = true,
