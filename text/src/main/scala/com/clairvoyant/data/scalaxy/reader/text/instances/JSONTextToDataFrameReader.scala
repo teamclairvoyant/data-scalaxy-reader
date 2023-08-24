@@ -2,6 +2,7 @@ package com.clairvoyant.data.scalaxy.reader.text.instances
 
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
 import org.apache.spark.sql.catalyst.json.JSONOptions.*
+import org.apache.spark.sql.functions.{col, explode}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JSONTextFormat] {
@@ -39,7 +40,7 @@ implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JS
       .option(TIMESTAMP_NTZ_FORMAT, textFormat.timestampNTZFormat)
       .option(TIME_ZONE, textFormat.timeZone)
 
-    jsonDataFrameReader
+    val df = jsonDataFrameReader
       .schema {
         textFormat.originalSchema.getOrElse {
           textFormat.adaptSchemaColumns {
@@ -50,5 +51,13 @@ implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JS
         }
       }
       .json(jsonDataset)
+
+    textFormat.dataColumnName
+      .map { dataColumn =>
+        df
+          .select(explode(col(dataColumn)).as("records"))
+          .select("records.*")
+      }
+      .getOrElse(df)
 
 }
