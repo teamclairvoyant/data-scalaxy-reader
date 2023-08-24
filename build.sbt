@@ -34,6 +34,7 @@ ThisBuild / wartremoverErrors ++= Warts.allBut(
   Wart.Equals,
   Wart.FinalCaseClass,
   Wart.ImplicitParameter,
+  Wart.LeakingSealed,
   Wart.Null,
   Wart.Overloading,
   Wart.ToString

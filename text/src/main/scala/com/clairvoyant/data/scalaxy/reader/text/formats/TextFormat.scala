@@ -2,10 +2,10 @@ package com.clairvoyant.data.scalaxy.reader.text.formats
 
 import org.apache.spark.sql.catalyst.util.{FailFastMode, ParseMode}
 import org.apache.spark.sql.types.StructType
-import zio.config.derivation.nameWithLabel
+import zio.config.derivation.*
 
 @nameWithLabel
-trait TextFormat
+sealed trait TextFormat
 
 case class CSVTextFormat(
     adaptSchemaColumns: StructType => StructType = identity,
