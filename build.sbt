@@ -29,10 +29,12 @@ ThisBuild / scalafixOnCompile := true
 // ----- WARTREMOVER ----- //
 
 ThisBuild / wartremoverErrors ++= Warts.allBut(
+  Wart.Any,
   Wart.DefaultArguments,
   Wart.Equals,
   Wart.FinalCaseClass,
   Wart.ImplicitParameter,
+  Wart.Null,
   Wart.Overloading,
   Wart.ToString
 )

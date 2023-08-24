@@ -1,7 +1,6 @@
 package com.clairvoyant.data.scalaxy.reader.text.instances
 
 import com.clairvoyant.data.scalaxy.reader.text.formats.XMLTextFormat
-import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.io.{File, PrintWriter}
@@ -11,9 +10,7 @@ implicit object XMLTextToDataFrameReader extends TextFormatToDataFrameReader[XML
 
   override def read(
       text: Seq[String],
-      textFormat: XMLTextFormat,
-      originalSchema: Option[StructType],
-      adaptSchemaColumns: StructType => StructType
+      textFormat: XMLTextFormat
   )(using sparkSession: SparkSession): DataFrame =
 
     import sparkSession.implicits.*
@@ -68,8 +65,8 @@ implicit object XMLTextToDataFrameReader extends TextFormatToDataFrameReader[XML
 
     val xmlDataFrame = xmlDataFrameReader
       .schema {
-        originalSchema.getOrElse {
-          adaptSchemaColumns {
+        textFormat.originalSchema.getOrElse {
+          textFormat.adaptSchemaColumns {
             xmlDataFrameReader
               .load(tempXMLFilesPaths)
               .schema

@@ -8,6 +8,7 @@ import zio.config.derivation.nameWithLabel
 trait TextFormat
 
 case class CSVTextFormat(
+    adaptSchemaColumns: StructType => StructType = identity,
     charToEscapeQuoteEscaping: String = "\\",
     columnNameOfCorruptRecord: String = "_corrupt_record",
     comment: String = "#",
@@ -30,6 +31,7 @@ case class CSVTextFormat(
     nanValue: String = "NaN",
     negativeInf: String = "-Inf",
     nullValue: String = "null",
+    originalSchema: Option[StructType] = None,
     positiveInf: String = "Inf",
     preferDate: Boolean = true,
     quote: String = "\"",
@@ -42,6 +44,7 @@ case class CSVTextFormat(
 ) extends TextFormat
 
 case class JSONTextFormat(
+    adaptSchemaColumns: StructType => StructType = identity,
     allowBackslashEscapingAnyCharacter: Boolean = false,
     allowComments: Boolean = false,
     allowNonNumericNumbers: Boolean = true,
@@ -58,6 +61,7 @@ case class JSONTextFormat(
     locale: String = "en-US",
     mode: ParseMode = FailFastMode,
     multiLine: Boolean = false,
+    originalSchema: Option[StructType] = None,
     prefersDecimal: Boolean = false,
     primitivesAsString: Boolean = false,
     samplingRatio: Double = 1.0,
@@ -67,6 +71,7 @@ case class JSONTextFormat(
 ) extends TextFormat
 
 case class XMLTextFormat(
+    adaptSchemaColumns: StructType => StructType = identity,
     attributePrefix: String = "_",
     charset: String = "UTF-8",
     columnNameOfCorruptRecord: String = "_corrupt_record",
@@ -77,6 +82,7 @@ case class XMLTextFormat(
     inferSchema: Boolean = true,
     mode: ParseMode = FailFastMode,
     nullValue: String = "null",
+    originalSchema: Option[StructType] = None,
     rowTag: String = "row",
     samplingRatio: Double = 1.0,
     timestampFormat: String = "yyyy-MM-dd HH:mm:ss",
