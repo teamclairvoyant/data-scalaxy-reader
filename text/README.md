@@ -115,6 +115,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameRead
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = csvText,
@@ -175,6 +177,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameRea
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = jsonText,
@@ -226,6 +230,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.XMLTextToDataFrameRead
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = xmlText,
