@@ -4,7 +4,6 @@ import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.CSVTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameReader
 import com.clairvoyant.data.scalaxy.test.util.SparkUtil
-import org.apache.spark.sql.catalyst.util.PermissiveMode
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.*
 
@@ -173,7 +172,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
 
     val csvTextFormat = CSVTextFormat(
       columnNameOfCorruptRecord = "bad_record",
-      mode = PermissiveMode
+      mode = "PERMISSIVE"
     )
 
     val df = TextToDataFrameReader.read(
@@ -283,7 +282,12 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
          |""".stripMargin
 
     val csvTextFormat = CSVTextFormat(
-      enforceSchema = true,
+      enforceSchema = true
+    )
+
+    val df = TextToDataFrameReader.read(
+      text = csvText,
+      textFormat = csvTextFormat,
       originalSchema = Some(
         StructType(
           List(
@@ -293,11 +297,6 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
           )
         )
       )
-    )
-
-    val df = TextToDataFrameReader.read(
-      text = csvText,
-      textFormat = csvTextFormat
     )
 
     df.count() shouldBe 3
@@ -461,7 +460,11 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
          |1003,Sunil,Hyderabad
          |""".stripMargin
 
-    val csvTextFormat = CSVTextFormat(
+    val csvTextFormat = CSVTextFormat()
+
+    val df = TextToDataFrameReader.read(
+      text = csvText,
+      textFormat = csvTextFormat,
       adaptSchemaColumns =
         schema =>
           StructType(schema.map {
@@ -470,11 +473,6 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
             case field =>
               field
           })
-    )
-
-    val df = TextToDataFrameReader.read(
-      text = csvText,
-      textFormat = csvTextFormat
     )
 
     df.count() shouldBe 3

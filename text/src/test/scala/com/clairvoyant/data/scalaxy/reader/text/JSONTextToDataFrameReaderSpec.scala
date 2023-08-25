@@ -3,7 +3,6 @@ package com.clairvoyant.data.scalaxy.reader.text
 import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameReader
-import com.clairvoyant.data.scalaxy.test.util.SparkUtil
 import com.clairvoyant.data.scalaxy.test.util.matchers.DataFrameMatcher
 import com.clairvoyant.data.scalaxy.test.util.readers.DataFrameReader
 import org.apache.spark.sql.types.*
@@ -329,7 +328,11 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
          |   "col3": 3
          |}""".stripMargin
 
-    val jsonTextFormat = JSONTextFormat(
+    val jsonTextFormat = JSONTextFormat()
+
+    val actualDF = TextToDataFrameReader.read(
+      text = jsonText,
+      textFormat = jsonTextFormat,
       adaptSchemaColumns =
         schema =>
           StructType(schema.map {
@@ -338,11 +341,6 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
             case field =>
               field
           })
-    )
-
-    val actualDF = TextToDataFrameReader.read(
-      text = jsonText,
-      textFormat = jsonTextFormat
     )
 
     val expectedDF = readJSONFromText(

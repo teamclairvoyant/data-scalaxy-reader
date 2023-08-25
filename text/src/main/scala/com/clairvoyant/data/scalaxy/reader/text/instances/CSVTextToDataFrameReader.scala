@@ -2,15 +2,16 @@ package com.clairvoyant.data.scalaxy.reader.text.instances
 
 import com.clairvoyant.data.scalaxy.reader.text.formats.CSVTextFormat
 import org.apache.spark.sql.catalyst.csv.CSVOptions.*
-import org.apache.spark.sql.catalyst.util.PermissiveMode
-import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.types.{StringType, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 implicit object CSVTextToDataFrameReader extends TextFormatToDataFrameReader[CSVTextFormat] {
 
   override def read(
       text: Seq[String],
-      textFormat: CSVTextFormat
+      textFormat: CSVTextFormat,
+      originalSchema: Option[StructType],
+      adaptSchemaColumns: StructType => StructType
   )(using sparkSession: SparkSession): DataFrame =
 
     import sparkSession.implicits.*
@@ -37,7 +38,7 @@ implicit object CSVTextToDataFrameReader extends TextFormatToDataFrameReader[CSV
       .option(LOCALE, textFormat.locale)
       .option(MAX_CHARS_PER_COLUMN, textFormat.maxCharsPerColumn)
       .option(MAX_COLUMNS, textFormat.maxColumns)
-      .option(MODE, textFormat.mode.name)
+      .option(MODE, textFormat.mode)
       .option(MULTI_LINE, textFormat.multiLine)
       .option(NAN_VALUE, textFormat.nanValue)
       .option(NEGATIVE_INF, textFormat.negativeInf)
@@ -53,10 +54,10 @@ implicit object CSVTextToDataFrameReader extends TextFormatToDataFrameReader[CSV
 
     csvDataFrameReader
       .schema {
-        textFormat.originalSchema
+        originalSchema
           .getOrElse {
-            textFormat.adaptSchemaColumns {
-              if (textFormat.mode == PermissiveMode) {
+            adaptSchemaColumns {
+              if (textFormat.mode == "PERMISSIVE") {
                 csvDataFrameReader
                   .csv(csvDataset)
                   .schema
