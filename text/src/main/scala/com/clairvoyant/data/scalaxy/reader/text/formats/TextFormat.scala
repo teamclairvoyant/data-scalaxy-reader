@@ -1,7 +1,7 @@
 package com.clairvoyant.data.scalaxy.reader.text.formats
 
-import zio.config.derivation.nameWithLabel
 import org.apache.spark.sql.catalyst.util.PermissiveMode
+import zio.config.derivation.nameWithLabel
 
 @nameWithLabel
 sealed trait TextFormat
