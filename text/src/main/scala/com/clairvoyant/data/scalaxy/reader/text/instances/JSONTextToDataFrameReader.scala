@@ -3,13 +3,16 @@ package com.clairvoyant.data.scalaxy.reader.text.instances
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
 import org.apache.spark.sql.catalyst.json.JSONOptions.*
 import org.apache.spark.sql.functions.{col, explode}
+import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JSONTextFormat] {
 
   override def read(
       text: Seq[String],
-      textFormat: JSONTextFormat
+      textFormat: JSONTextFormat,
+      originalSchema: Option[StructType],
+      adaptSchemaColumns: StructType => StructType
   )(using sparkSession: SparkSession): DataFrame =
 
     import sparkSession.implicits.*
@@ -31,7 +34,7 @@ implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JS
       .option(ENCODING, textFormat.encoding)
       .option(LINE_SEP, textFormat.lineSep)
       .option(LOCALE, textFormat.locale)
-      .option(MODE, textFormat.mode.name)
+      .option(MODE, textFormat.mode)
       .option(MULTI_LINE, textFormat.multiLine)
       .option(PREFERS_DECIMAL, textFormat.prefersDecimal)
       .option(PRIMITIVES_AS_STRING, textFormat.primitivesAsString)
@@ -42,8 +45,8 @@ implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JS
 
     val df = jsonDataFrameReader
       .schema {
-        textFormat.originalSchema.getOrElse {
-          textFormat.adaptSchemaColumns {
+        originalSchema.getOrElse {
+          adaptSchemaColumns {
             jsonDataFrameReader
               .json(jsonDataset)
               .schema

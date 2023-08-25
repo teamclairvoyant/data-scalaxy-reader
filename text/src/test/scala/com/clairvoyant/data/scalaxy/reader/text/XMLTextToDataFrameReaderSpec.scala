@@ -2,10 +2,8 @@ package com.clairvoyant.data.scalaxy.reader.text
 
 import com.clairvoyant.data.scalaxy.reader.text.formats.XMLTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.XMLTextToDataFrameReader
-import com.clairvoyant.data.scalaxy.test.util.SparkUtil
 import com.clairvoyant.data.scalaxy.test.util.matchers.DataFrameMatcher
 import com.clairvoyant.data.scalaxy.test.util.readers.DataFrameReader
-import org.apache.spark.sql.catalyst.util.PermissiveMode
 import org.apache.spark.sql.types.*
 
 class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher {
@@ -87,7 +85,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
 
     val xmlTextFormat = XMLTextFormat(
       columnNameOfCorruptRecord = "_malformed_records",
-      mode = PermissiveMode,
+      mode = "PERMISSIVE",
       rowTag = "ROW"
     )
 
@@ -320,7 +318,11 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
          |</row>
          |""".stripMargin
 
-    val xmlTextFormat = XMLTextFormat(
+    val xmlTextFormat = XMLTextFormat()
+
+    val df = TextToDataFrameReader.read(
+      text = xmlText,
+      textFormat = xmlTextFormat,
       adaptSchemaColumns =
         schema =>
           StructType(schema.map {
@@ -329,11 +331,6 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
             case field =>
               field
           })
-    )
-
-    val df = TextToDataFrameReader.read(
-      text = xmlText,
-      textFormat = xmlTextFormat
     )
 
     df.count() shouldBe 1

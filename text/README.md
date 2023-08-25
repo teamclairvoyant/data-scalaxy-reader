@@ -2,7 +2,7 @@
 
 User need to add below dependency to the `build.sbt` file:
 
-```sbt
+```Scala
 ThisBuild / resolvers += "Github Repo" at "https://maven.pkg.github.com/teamclairvoyant/data-scalaxy-reader/"
 
 ThisBuild / credentials += Credentials(
@@ -18,6 +18,35 @@ ThisBuild / libraryDependencies += "com.clairvoyant.data.scalaxy" %% "reader-tex
 Make sure you add `GITHUB_USERNAME` and `GITHUB_TOKEN` to the environment variables.
 
 `GITHUB_TOKEN` is the Personal Access Token with the permission to read packages.
+
+## API 
+
+The library provides below `read` APIs in class `TextToDataFrameReader` in order to parse a text into spark dataframe:
+
+```scala
+  def read[T <: TextFormat](
+      text: String,
+      textFormat: T,
+      originalSchema: Option[StructType] = None,
+      adaptSchemaColumns: StructType => StructType = identity
+  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame
+
+  def read[T <: TextFormat](
+      text: Seq[String],
+      textFormat: T,
+      originalSchema: Option[StructType],
+      adaptSchemaColumns: StructType => StructType
+  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame
+``````
+
+The `read` method takes below arguments:
+
+| Argument Name      | Default Value | Description                                                  |
+| :----------------- | :-----------: | :----------------------------------------------------------- |
+| text               |       -       | The text in string format to be parsed to dataframe.         |
+| textFormat         |       -       | The `TextFormat` representation for the format of the text.  |
+| originalSchema     |     None      | The schema for the dataframe.                                |
+| adaptSchemaColumns |   identity    | The function to modify the inferred schema of the dataframe. |
 
 User can use this library to read text data of various formats and parse it to spark dataframe.
 Supported text formats are:
@@ -45,7 +74,6 @@ User can provide below options to the `CSVTextFormat` instance:
 
 | Parameter Name                |        Default Value        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | :---------------------------- | :-------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| fieldsSeparator               |              ,              | Delimiter by which fields in a row are separated in a csv text.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | charToEscapeQuoteEscaping     |              \              | Sets a single character used for escaping the escape for the quote character.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | columnNameOfCorruptRecord     |       _corrupt_record       | Allows renaming the new field having malformed string created by PERMISSIVE mode. <br/>This overrides `spark.sql.columnNameOfCorruptRecord`.                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | comment                       |              #              | Sets a single character used for skipping lines beginning with this character.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -63,7 +91,7 @@ User can provide below options to the `CSVTextFormat` instance:
 | locale                        |            en-US            | Sets a locale as language tag in IETF BCP 47 format. For instance, this is used while parsing dates and timestamps.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | maxCharsPerColumn             |             -1              | Defines the maximum number of characters allowed for any given value being read.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |  |
 | maxColumns                    |            20480            | Defines a hard limit of how many columns a record can have.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |  |
-| mode                          |        FailFastMode         | Allows a mode for dealing with corrupt records during parsing. Allowed values are PermissiveMode, DropMalformedMode and FailFastMode                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| mode                          |          FAILFAST           | Allows a mode for dealing with corrupt records during parsing. Allowed values are PERMISSIVE, DROPMALFORMED and FAILFAST.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | multiLine                     |            false            | Parse one record, which may span multiple lines, per file.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | nanValue                      |             NaN             | Sets the string representation of a non-number value.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | negativeInf                   |            -Inf             | Sets the string representation of a negative infinity value.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -87,6 +115,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameRead
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = csvText,
@@ -129,7 +159,7 @@ User can provide below options to the `JSONTextFormat` instance:
 | inferSchema                        |            true             | Infers the input schema automatically from data.                                                                                                           |
 | lineSep                            |             \n              | Defines the line separator that should be used for parsing. Maximum length is 1 character.                                                                 |
 | locale                             |            en-US            | Sets a locale as language tag in IETF BCP 47 format. For instance, this is used while parsing dates and timestamps.                                        |
-| mode                               |        FailFastMode         | Allows a mode for dealing with corrupt records during parsing. Allowed values are PermissiveMode, DropMalformedMode and FailFastMode                       |
+| mode                               |          FAILFAST           | Allows a mode for dealing with corrupt records during parsing. Allowed values are PERMISSIVE, DROPMALFORMED and FAILFAST.                                  |
 | multiLine                          |            false            | Parse one record, which may span multiple lines, per file.                                                                                                 |
 | prefersDecimal                     |            false            | Infers all floating-point values as a decimal type. If the values do not fit in decimal, then it infers them as doubles.                                   |
 | primitivesAsString                 |            false            | Infers all primitive values as a string type.                                                                                                              |
@@ -137,8 +167,6 @@ User can provide below options to the `JSONTextFormat` instance:
 | timestampFormat                    |     yyyy-MM-dd HH:mm:ss     | Sets the string that indicates a timestamp format.                                                                                                         |
 | timestampNTZFormat                 | yyyy-MM-dd'T'HH:mm:ss[.SSS] | Sets the string that indicates a timestamp without timezone format.                                                                                        |
 | timeZone                           |             UTC             | Sets the string that indicates a time zone ID to be used to format timestamps in the JSON datasources or partition values.                                 |
-| originalSchema                     |            None             | Defines the schema for the dataframe.                                                                                                                      |
-| adaptSchemaColumns                 |            None             | Defines a function to modify the inferred schema and reapply it to the dataframe.                                                                          |
 
 #### 2. Import type class instance
 
@@ -149,6 +177,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameRea
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = jsonText,
@@ -183,15 +213,13 @@ User can provide below options to the `XMLTextFormat` instance:
 | ignoreSurroundingSpaces   |        false        | Defines whether or not surrounding whitespaces from values being read should be skipped.                                                                                                                                                                                                                                                                                                                                                      |
 | ignoreNamespace           |        false        | If true, namespaces prefixes on XML elements and attributes are ignored. <br/>Tags <abc:author> and <def:author> would, for example, be treated as if both are just <author>. <br/>Note that, at the moment, namespaces cannot be ignored on the rowTag element, only its children. <br/>Note that XML parsing is in general not namespace-aware even if false.                                                                               |
 | inferSchema               |        true         | Infers the input schema automatically from data.                                                                                                                                                                                                                                                                                                                                                                                              |
-| mode                      |    FailFastMode     | Allows a mode for dealing with corrupt records during parsing. Allowed values are PermissiveMode, DropMalformedMode and FailFastMode                                                                                                                                                                                                                                                                                                          |
+| mode                      |      FAILFAST       | Allows a mode for dealing with corrupt records during parsing. Allowed values are PERMISSIVE, DROPMALFORMED and FAILFAST.                                                                                                                                                                                                                                                                                                                     |
 | nullValue                 |        null         | The value to read as null value                                                                                                                                                                                                                                                                                                                                                                                                               |
 | rowTag                    |         row         | The row tag of your xml files to treat as a row. For example, in this xml <books> <book><book> ...</books>, the appropriate value would be book.                                                                                                                                                                                                                                                                                              |
 | samplingRatio             |         1.0         | Defines fraction of rows used for schema inferring.                                                                                                                                                                                                                                                                                                                                                                                           |
 | timestampFormat           | yyyy-MM-dd HH:mm:ss | Sets the string that indicates a timestamp format.                                                                                                                                                                                                                                                                                                                                                                                            |
 | valueTag                  |       _VALUE        | The tag used for the value when there are attributes in the element having no child.                                                                                                                                                                                                                                                                                                                                                          |
 | wildcardColName           |       xs_any        | Name of a column existing in the provided schema which is interpreted as a 'wildcard'. It must have type string or array of strings. <br/>It will match any XML child element that is not otherwise matched by the schema. The XML of the child becomes the string value of the column. <br/>If an array, then all unmatched elements will be returned as an array of strings. As its name implies, it is meant to emulate XSD's xs:any type. |
-| originalSchema            |        None         | Defines the schema for the dataframe.                                                                                                                                                                                                                                                                                                                                                                                                         |
-| adaptSchemaColumns        |        None         | Defines a function to modify the inferred schema and reapply it to the dataframe.                                                                                                                                                                                                                                                                                                                                                             |
 
 #### 2. Import type class instance
 
@@ -202,6 +230,8 @@ import com.clairvoyant.data.scalaxy.reader.text.instances.XMLTextToDataFrameRead
 #### 3. Call API
 
 ```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
 TextToDataFrameReader
     .read(
         text = xmlText,
