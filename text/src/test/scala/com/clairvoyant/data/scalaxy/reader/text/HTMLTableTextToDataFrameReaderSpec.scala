@@ -25,19 +25,19 @@ class HTMLTableTextToDataFrameReaderSpec extends DataFrameReader with DataFrameM
                   <thead class="a-dtt-thead">
                   <tr>
                       <th class="a-dtt-header">
-                          col_A
+                          Date
                       </th>
                       <th class="a-dtt-header">
-                          col_B
+                          Transaction
                       </th>
                       <th class="a-dtt-header">
                           <div class="ac-float-r">
-                              col_C
+                              Amount
                           </div>
                       </th>
                       <th class="a-dtt-header">
                           <div class="ac-float-r">
-                              col_D
+                              Balance
                           </div>
                       </th>
                   </tr>
@@ -45,39 +45,39 @@ class HTMLTableTextToDataFrameReaderSpec extends DataFrameReader with DataFrameM
                   <tbody class="a-dtt-tbody">
                   <tr>
                       <td>
-                          val_A1
+                          01/06/2022
                       </td>
                       <td>
-                          val_B1
+                          04/2022 Advertising Fees
                       </td>
                       <td>
                           <div class="ac-float-r">
-                              val_C1
+                              £4,049.19
                           </div>
                       </td>
                       <td>
                           <div class="ac-float-r">
-                              val_D1
+                              £4,049.19
                           </div>
                       </td>
                   </tr>
                   <tr>
                       <td>
-                          val_A2
+                          30/05/2022
                       </td>
                       <td>
-                          val_B2
+                          Payment by Direct Deposit
                       </td>
                       <td>
                           <div class="ac-float-r">
                               <div class="ac-payment-balance-negative">
-                                  val_C2
+                                  -£3,349.17
                               </div>
                           </div>
                       </td>
                       <td>
                           <div class="ac-float-r">
-                              val_D2
+                              £0.00
                           </div>
                       </td>
                   </tr>
@@ -98,20 +98,24 @@ class HTMLTableTextToDataFrameReaderSpec extends DataFrameReader with DataFrameM
 
     val htmlTableTextFormat = HTMLTableTextFormat()
 
-    val actalDF = TextToDataFrameReader.read(
+    val actualDF = TextToDataFrameReader.read(
       text = htmlText,
       textFormat = htmlTableTextFormat
     )
 
     val expectedDF = readCSVFromText(
-      """
-        |col_A~col_B~col_C~col_D
-        |val_A1~val_B1~val_C1~val_D1
-        |val_A2~val_B2~val_C2~val_D2
-      """.stripMargin
+      text =
+        """
+          |Amount~Balance~Date~Transaction
+          |£4,049.19~£4,049.19~01/06/2022~04/2022 Advertising Fees
+          |-£3,349.17~£0.00~30/05/2022~Payment by Direct Deposit
+      """.stripMargin,
+      csvOptions = Map(
+        "sep" -> "~"
+      )
     )
 
-    actalDF.show()
+    actualDF should matchExpectedDataFrame(expectedDF)
   }
 
 }
