@@ -37,12 +37,15 @@ ThisBuild / wartremoverErrors ++= Warts.allBut(
   Wart.LeakingSealed,
   Wart.Null,
   Wart.Overloading,
+  Wart.Throw,
+  Wart.TryPartial,
   Wart.ToString
 )
 
 // ----- TOOL VERSIONS ----- //
 
 val dataScalaxyTestUtilVersion = "1.0.0"
+val jsoupVersion = "1.16.1"
 val scalaParserCombinatorsVersion = "2.3.0"
 val sparkVersion = "3.4.1"
 val sparkXMLVersion = "0.16.0"
@@ -52,6 +55,10 @@ val zioConfigVersion = "4.0.0-RC16"
 
 val dataScalaxyTestUtilDependencies = Seq(
   "com.clairvoyant.data.scalaxy" %% "test-util" % dataScalaxyTestUtilVersion % Test
+)
+
+val jsoupDependencies = Seq(
+  "org.jsoup" % "jsoup" % jsoupVersion
 )
 
 val scalaParserCombinatorsDependencies = Seq(
@@ -77,6 +84,7 @@ val zioConfigDependencies = Seq(
 
 val textDependencies =
   dataScalaxyTestUtilDependencies ++
+    jsoupDependencies ++
     sparkDependencies ++
     sparkXMLDependencies ++
     zioConfigDependencies
