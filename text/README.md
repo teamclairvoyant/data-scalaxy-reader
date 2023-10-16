@@ -238,3 +238,42 @@ TextToDataFrameReader
         textFormat = xmlTextFormat
     )
 ``````
+
+### HTML Table
+
+Suppose user wants to read a text `htmlText` containing data in the form of html table and parse it to spark dataframe.
+Then user need to perform below steps:
+
+#### 1. Define file format
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.formats.HTMLTableTextFormat
+
+val htmlTableTextFormat = HTMLTableTextFormat(
+  tableName = "my_table"
+)
+```
+
+User can provide below options to the `HTMLTableTextFormat` instance:
+
+| Parameter Name | Default Value | Mandatory | Description                                                                   |
+| :------------- | :-----------: | :-------: | :---------------------------------------------------------------------------- |
+| tableName      |     None      |    No     | The name of the table in the `table` tag that you want to read the data from. |
+
+#### 2. Import type class instance
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.instances.HTMLTableTextToDataFrameReader
+``````
+
+#### 3. Call API
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+
+TextToDataFrameReader
+    .read(
+        text = htmlText,
+        textFormat = htmlTableTextFormat
+    )
+``````

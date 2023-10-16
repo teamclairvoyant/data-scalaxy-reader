@@ -83,3 +83,7 @@ case class XMLTextFormat(
     valueTag: String = "_VALUE",
     wildcardColName: String = "xs_any"
 ) extends TextFormat
+
+case class HTMLTableTextFormat(
+    tableName: Option[String] = None
+) extends TextFormat
