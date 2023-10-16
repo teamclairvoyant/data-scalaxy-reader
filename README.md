@@ -14,5 +14,6 @@ Supported text formats are:
 * CSV
 * JSON
 * XML
+* HTML Table
 
 Please see the detailed documentation [here](text/README.md).
