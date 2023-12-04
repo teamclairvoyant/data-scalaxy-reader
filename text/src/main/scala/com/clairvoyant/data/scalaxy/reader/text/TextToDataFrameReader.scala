@@ -1,26 +1,26 @@
 package com.clairvoyant.data.scalaxy.reader.text
 
 import com.clairvoyant.data.scalaxy.reader.text.formats.TextFormat
-import com.clairvoyant.data.scalaxy.reader.text.instances.TextFormatToDataFrameReader
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-object TextToDataFrameReader {
+trait TextToDataFrameReader[T]:
 
-  def read[T <: TextFormat](
-      text: String,
-      textFormat: T,
-      originalSchema: Option[StructType] = None,
-      adaptSchemaColumns: StructType => StructType = identity
-  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame =
-    read(Seq(text), textFormat, originalSchema, adaptSchemaColumns)
-
-  def read[T <: TextFormat](
+  def read(
       text: Seq[String],
       textFormat: T,
       originalSchema: Option[StructType],
       adaptSchemaColumns: StructType => StructType
-  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame =
-    textFormatToDataFrameReader.read(text, textFormat, originalSchema, adaptSchemaColumns)
+  )(using sparkSession: SparkSession): DataFrame
 
-}
+  def read(
+      text: String,
+      textFormat: T,
+      originalSchema: Option[StructType] = None,
+      adaptSchemaColumns: StructType => StructType = identity
+  )(using sparkSession: SparkSession): DataFrame = read(Seq(text), textFormat, originalSchema, adaptSchemaColumns)
+
+object TextToDataFrameReader:
+
+  def apply[T <: TextFormat](using textToDataFrameReader: TextToDataFrameReader[T]): TextToDataFrameReader[T] =
+    textToDataFrameReader

@@ -1,6 +1,5 @@
 package com.clairvoyant.data.scalaxy.reader.text
 
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameReader
 import com.clairvoyant.data.scalaxy.test.util.matchers.DataFrameMatcher
@@ -8,6 +7,8 @@ import com.clairvoyant.data.scalaxy.test.util.readers.DataFrameReader
 import org.apache.spark.sql.types.*
 
 class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher {
+
+  val jsonTextToDataFrameReader = TextToDataFrameReader[JSONTextFormat]
 
   "read() - with json text having array of records" should "return a dataframe with correct count and schema" in {
     val jsonText =
@@ -24,7 +25,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
 
     val jsonTextFormat = JSONTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -42,7 +43,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
 
     val jsonTextFormat = JSONTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -56,7 +57,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
 
     val jsonTextFormat = JSONTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -77,7 +78,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowBackslashEscapingAnyCharacter = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -113,7 +114,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowComments = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -148,7 +149,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowNonNumericNumbers = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -168,7 +169,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowNumericLeadingZeros = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -196,7 +197,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowSingleQuotes = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -224,7 +225,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       allowUnquotedFieldNames = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -259,7 +260,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       dropFieldIfAllNull = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -292,7 +293,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       prefersDecimal = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -312,7 +313,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
       primitivesAsString = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat
     )
@@ -330,7 +331,7 @@ class JSONTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatche
 
     val jsonTextFormat = JSONTextFormat()
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = jsonTextToDataFrameReader.read(
       text = jsonText,
       textFormat = jsonTextFormat,
       adaptSchemaColumns =

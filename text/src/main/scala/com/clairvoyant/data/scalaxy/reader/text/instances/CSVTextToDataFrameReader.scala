@@ -1,11 +1,12 @@
 package com.clairvoyant.data.scalaxy.reader.text.instances
 
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.CSVTextFormat
 import org.apache.spark.sql.catalyst.csv.CSVOptions.*
 import org.apache.spark.sql.types.{StringType, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-implicit object CSVTextToDataFrameReader extends TextFormatToDataFrameReader[CSVTextFormat] {
+implicit object CSVTextToDataFrameReader extends TextToDataFrameReader[CSVTextFormat] {
 
   override def read(
       text: Seq[String],
