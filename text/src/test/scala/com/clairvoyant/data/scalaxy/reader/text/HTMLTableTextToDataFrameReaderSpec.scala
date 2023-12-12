@@ -1,15 +1,13 @@
 package com.clairvoyant.data.scalaxy.reader.text
 
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
-import com.clairvoyant.data.scalaxy.reader.text.formats.{CSVTextFormat, HTMLTableTextFormat}
+import com.clairvoyant.data.scalaxy.reader.text.formats.HTMLTableTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.HTMLTableTextToDataFrameReader
-import com.clairvoyant.data.scalaxy.test.util.SparkUtil
 import com.clairvoyant.data.scalaxy.test.util.matchers.DataFrameMatcher
 import com.clairvoyant.data.scalaxy.test.util.readers.DataFrameReader
-import org.apache.spark.sql.functions.col
-import org.apache.spark.sql.types.*
 
 class HTMLTableTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher {
+
+  val htmlTableTextToDataFrameReader = TextToDataFrameReader[HTMLTableTextFormat]
 
   "read() - with html text" should "return a dataframe with correct count and schema" in {
     val htmlText =
@@ -98,7 +96,7 @@ class HTMLTableTextToDataFrameReaderSpec extends DataFrameReader with DataFrameM
 
     val htmlTableTextFormat = HTMLTableTextFormat()
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = htmlTableTextToDataFrameReader.read(
       text = htmlText,
       textFormat = htmlTableTextFormat
     )

@@ -8,6 +8,8 @@ import org.apache.spark.sql.types.*
 
 class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher {
 
+  val xmlTextToDataFrameReader = TextToDataFrameReader[XMLTextFormat]
+
   "read() - with xml text" should "return a dataframe with correct count and schema" in {
     val xmlText =
       """|<row>
@@ -19,7 +21,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
 
     val xmlTextFormat = XMLTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -41,7 +43,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       attributePrefix = "attr_"
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -89,7 +91,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       rowTag = "ROW"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -127,7 +129,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       excludeAttribute = true
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -157,7 +159,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       nullValue = ""
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -187,7 +189,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       rowTag = "cols"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -225,7 +227,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       rowTag = "person"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -261,7 +263,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       rowTag = "book"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -287,7 +289,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
       valueTag = "#VALUE"
     )
 
-    val actualDF = TextToDataFrameReader.read(
+    val actualDF = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat
     )
@@ -320,7 +322,7 @@ class XMLTextToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher
 
     val xmlTextFormat = XMLTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = xmlTextToDataFrameReader.read(
       text = xmlText,
       textFormat = xmlTextFormat,
       adaptSchemaColumns =

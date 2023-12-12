@@ -12,37 +12,38 @@ ThisBuild / credentials += Credentials(
   System.getenv("GITHUB_TOKEN")
 )
 
-ThisBuild / libraryDependencies += "com.clairvoyant.data.scalaxy" %% "reader-text" % "1.0.0"
+ThisBuild / libraryDependencies += "com.clairvoyant.data.scalaxy" %% "reader-text" % "2.0.0"
 ```
 
 Make sure you add `GITHUB_USERNAME` and `GITHUB_TOKEN` to the environment variables.
 
 `GITHUB_TOKEN` is the Personal Access Token with the permission to read packages.
 
-## API 
+## API
 
-The library provides below `read` APIs in class `TextToDataFrameReader` in order to parse a text into spark dataframe:
+The library provides below `read` APIs in type class `TextToDataFrameReader` in order to parse a text into spark
+dataframe:
 
 ```scala
-  def read[T <: TextFormat](
-      text: String,
-      textFormat: T,
-      originalSchema: Option[StructType] = None,
-      adaptSchemaColumns: StructType => StructType = identity
-  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame
+def read(
+   text: String,
+   textFormat: T, 
+   originalSchema: Option[StructType] = None,
+   adaptSchemaColumns: StructType => StructType = identity
+)(using sparkSession: SparkSession): DataFrame
 
-  def read[T <: TextFormat](
-      text: Seq[String],
-      textFormat: T,
-      originalSchema: Option[StructType],
-      adaptSchemaColumns: StructType => StructType
-  )(using textFormatToDataFrameReader: TextFormatToDataFrameReader[T], sparkSession: SparkSession): DataFrame
-``````
+def read(
+   text: Seq[String],
+   textFormat: T,
+   originalSchema: Option[StructType],
+   adaptSchemaColumns: StructType => StructType
+)(using sparkSession: SparkSession): DataFrame
+```
 
 The `read` method takes below arguments:
 
 | Argument Name      | Default Value | Description                                                  |
-| :----------------- | :-----------: | :----------------------------------------------------------- |
+|:-------------------|:-------------:|:-------------------------------------------------------------|
 | text               |       -       | The text in string format to be parsed to dataframe.         |
 | textFormat         |       -       | The `TextFormat` representation for the format of the text.  |
 | originalSchema     |     None      | The schema for the dataframe.                                |
@@ -60,7 +61,19 @@ Supported text formats are:
 Suppose user wants to read CSV text data `csvText` and parse it to spark dataframe.
 Then user need to perform below steps:
 
-#### 1. Define file format
+#### 1. Import type class
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+```
+
+#### 2. Import type class instance
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameReader
+```
+
+#### 3. Define text format
 
 ```scala
 import com.clairvoyant.data.scalaxy.reader.text.formats.CSVTextFormat
@@ -73,7 +86,7 @@ val csvTextFormat = CSVTextFormat(
 User can provide below options to the `CSVTextFormat` instance:
 
 | Parameter Name                |        Default Value        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| :---------------------------- | :-------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|:------------------------------|:---------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | charToEscapeQuoteEscaping     |              \              | Sets a single character used for escaping the escape for the quote character.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | columnNameOfCorruptRecord     |       _corrupt_record       | Allows renaming the new field having malformed string created by PERMISSIVE mode. <br/>This overrides `spark.sql.columnNameOfCorruptRecord`.                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | comment                       |              #              | Sets a single character used for skipping lines beginning with this character.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -106,30 +119,34 @@ User can provide below options to the `CSVTextFormat` instance:
 | timestampNTZFormat            | yyyy-MM-dd'T'HH:mm:ss[.SSS] | Sets the string that indicates a timestamp without timezone format.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | unescapedQuoteHandling        |      STOP_AT_DELIMITER      | Defines how the CsvParser will handle values with unescaped quotes. <br/> Allowed values are STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR                                                                                                                                                                                                                                                                                                                                                                                       |
 
-#### 2. Import type class instance
+#### 4. Call API
 
 ```scala
-import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameReader
-``````
-
-#### 3. Call API
-
-```scala
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
-
-TextToDataFrameReader
-    .read(
-        text = csvText,
-        textFormat = csvTextFormat
-    )
-``````
+TextToDataFrameReader[CSVTextFormat]
+  .read(
+    text = csvText,
+    textFormat = csvTextFormat
+  )
+```
 
 ### JSON
 
 Suppose user wants to read JSON text data `jsonText` and parse it to spark dataframe.
 Then user need to perform below steps:
 
-#### 1. Define file format
+#### 1. Import type class
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+```
+
+#### 2. Import type class instance
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameReader
+```
+
+#### 3. Define text format
 
 ```scala
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
@@ -142,7 +159,7 @@ val jsonTextFormat = JSONTextFormat(
 User can provide below options to the `JSONTextFormat` instance:
 
 | Parameter Name                     |        Default Value        | Description                                                                                                                                                |
-| :--------------------------------- | :-------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|:-----------------------------------|:---------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | allowBackslashEscapingAnyCharacter |            false            | Allows accepting quoting of all character using backslash quoting mechanism.                                                                               |
 | allowComments                      |            false            | Ignores Java/C++ style comment in JSON records.                                                                                                            |
 | allowNonNumericNumbers             |            true             | Allows JSON parser to recognize set of “Not-a-Number” (NaN) tokens as legal floating number values.                                                        |
@@ -168,30 +185,34 @@ User can provide below options to the `JSONTextFormat` instance:
 | timestampNTZFormat                 | yyyy-MM-dd'T'HH:mm:ss[.SSS] | Sets the string that indicates a timestamp without timezone format.                                                                                        |
 | timeZone                           |             UTC             | Sets the string that indicates a time zone ID to be used to format timestamps in the JSON datasources or partition values.                                 |
 
-#### 2. Import type class instance
+#### 4. Call API
 
 ```scala
-import com.clairvoyant.data.scalaxy.reader.text.instances.JSONTextToDataFrameReader
-``````
-
-#### 3. Call API
-
-```scala
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
-
-TextToDataFrameReader
-    .read(
-        text = jsonText,
-        textFormat = jsonTextFormat
-    )
-``````
+TextToDataFrameReader[JSONTextFormat]
+  .read(
+    text = jsonText,
+    textFormat = jsonTextFormat
+  )
+```
 
 ### XML
 
 Suppose user wants to read XML text data `xmlText` and parse it to spark dataframe.
 Then user need to perform below steps:
 
-#### 1. Define file format
+#### 1. Import type class
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+```
+
+#### 2. Import type class instance
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.instances.XMLTextToDataFrameReader
+```
+
+#### 3. Define text format
 
 ```scala
 import com.clairvoyant.data.scalaxy.reader.text.formats.XMLTextFormat
@@ -204,7 +225,7 @@ val xmlTextFormat = XMLTextFormat(
 User can provide below options to the `XMLTextFormat` instance:
 
 | Parameter Name            |    Default Value    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| :------------------------ | :-----------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|:--------------------------|:-------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | attributePrefix           |          _          | The prefix for attributes so that we can differentiate attributes and elements.                                                                                                                                                                                                                                                                                                                                                               |
 | charset                   |        UTF-8        | Defaults to 'UTF-8' but can be set to other valid charset names.                                                                                                                                                                                                                                                                                                                                                                              |
 | columnNameOfCorruptRecord |   _corrupt_record   | Allows renaming the new field having malformed string created by PERMISSIVE mode. This overrides spark.sql.columnNameOfCorruptRecord.                                                                                                                                                                                                                                                                                                         |
@@ -221,30 +242,34 @@ User can provide below options to the `XMLTextFormat` instance:
 | valueTag                  |       _VALUE        | The tag used for the value when there are attributes in the element having no child.                                                                                                                                                                                                                                                                                                                                                          |
 | wildcardColName           |       xs_any        | Name of a column existing in the provided schema which is interpreted as a 'wildcard'. It must have type string or array of strings. <br/>It will match any XML child element that is not otherwise matched by the schema. The XML of the child becomes the string value of the column. <br/>If an array, then all unmatched elements will be returned as an array of strings. As its name implies, it is meant to emulate XSD's xs:any type. |
 
-#### 2. Import type class instance
+#### 4. Call API
 
 ```scala
-import com.clairvoyant.data.scalaxy.reader.text.instances.XMLTextToDataFrameReader
-``````
-
-#### 3. Call API
-
-```scala
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
-
-TextToDataFrameReader
-    .read(
-        text = xmlText,
-        textFormat = xmlTextFormat
-    )
-``````
+TextToDataFrameReader[XMLTextFormat]
+  .read(
+    text = xmlText,
+    textFormat = xmlTextFormat
+  )
+```
 
 ### HTML Table
 
 Suppose user wants to read a text `htmlText` containing data in the form of html table and parse it to spark dataframe.
 Then user need to perform below steps:
 
-#### 1. Define file format
+#### 1. Import type class
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
+```
+
+#### 2. Import type class instance
+
+```scala
+import com.clairvoyant.data.scalaxy.reader.text.instances.HTMLTableTextToDataFrameReader
+```
+
+#### 3. Define text format
 
 ```scala
 import com.clairvoyant.data.scalaxy.reader.text.formats.HTMLTableTextFormat
@@ -257,23 +282,15 @@ val htmlTableTextFormat = HTMLTableTextFormat(
 User can provide below options to the `HTMLTableTextFormat` instance:
 
 | Parameter Name | Default Value | Mandatory | Description                                                                   |
-| :------------- | :-----------: | :-------: | :---------------------------------------------------------------------------- |
+|:---------------|:-------------:|:---------:|:------------------------------------------------------------------------------|
 | tableName      |     None      |    No     | The name of the table in the `table` tag that you want to read the data from. |
 
-#### 2. Import type class instance
+#### 4. Call API
 
 ```scala
-import com.clairvoyant.data.scalaxy.reader.text.instances.HTMLTableTextToDataFrameReader
-``````
-
-#### 3. Call API
-
-```scala
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
-
-TextToDataFrameReader
-    .read(
-        text = htmlText,
-        textFormat = htmlTableTextFormat
-    )
-``````
+TextToDataFrameReader[HTMLTableTextFormat]
+  .read(
+    text = htmlText,
+    textFormat = htmlTableTextFormat
+  )
+```

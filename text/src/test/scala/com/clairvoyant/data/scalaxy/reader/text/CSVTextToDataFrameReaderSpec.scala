@@ -1,6 +1,5 @@
 package com.clairvoyant.data.scalaxy.reader.text
 
-import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.CSVTextFormat
 import com.clairvoyant.data.scalaxy.reader.text.instances.CSVTextToDataFrameReader
 import com.clairvoyant.data.scalaxy.test.util.SparkUtil
@@ -8,6 +7,8 @@ import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.types.*
 
 class CSVTextToDataFrameReaderSpec extends SparkUtil {
+
+  val csvTextToDataFrameReader = TextToDataFrameReader[CSVTextFormat]
 
   "read() - with csv text and headers" should "return a dataframe with correct count and schema" in {
     val csvText =
@@ -18,7 +19,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
 
     val csvTextFormat = CSVTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -38,7 +39,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       inferSchema = false
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -57,7 +58,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       header = false
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -77,7 +78,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       sep = ";"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -94,7 +95,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       recordSep = "#"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -112,7 +113,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       recordSep = "#"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -132,7 +133,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       timestampFormat = "dd-MM-yyyy HH:mm:ss"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -153,7 +154,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       locale = "fr-FR"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -175,7 +176,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       mode = "PERMISSIVE"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -208,7 +209,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       escape = "#"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -235,7 +236,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       nullValue = "Invalid"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -263,7 +264,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       quote = "~"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -285,7 +286,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       enforceSchema = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat,
       originalSchema = Some(
@@ -315,7 +316,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       ignoreLeadingWhiteSpace = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -343,7 +344,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       ignoreTrailingWhiteSpace = true
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -372,7 +373,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       nanValue = "NA"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -392,7 +393,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       positiveInf = "PositiveInfiniteValue"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -417,7 +418,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       negativeInf = "NegativeInfiniteValue"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -444,7 +445,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
       comment = "*"
     )
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat
     )
@@ -462,7 +463,7 @@ class CSVTextToDataFrameReaderSpec extends SparkUtil {
 
     val csvTextFormat = CSVTextFormat()
 
-    val df = TextToDataFrameReader.read(
+    val df = csvTextToDataFrameReader.read(
       text = csvText,
       textFormat = csvTextFormat,
       adaptSchemaColumns =
