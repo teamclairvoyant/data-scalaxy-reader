@@ -1,5 +1,6 @@
 package com.clairvoyant.data.scalaxy.reader.text.instances
 
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.XMLTextFormat
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -7,7 +8,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import java.io.{File, PrintWriter}
 import java.util.concurrent.Semaphore
 
-implicit object XMLTextToDataFrameReader extends TextFormatToDataFrameReader[XMLTextFormat] {
+implicit object XMLTextToDataFrameReader extends TextToDataFrameReader[XMLTextFormat] {
 
   override def read(
       text: Seq[String],

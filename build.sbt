@@ -100,6 +100,6 @@ lazy val `data-scalaxy-reader` = (project in file("."))
 
 lazy val `reader-text` = (project in file("text"))
   .settings(
-    version := "1.1.0",
+    version := "2.0.0",
     libraryDependencies ++= textDependencies
   )

@@ -1,12 +1,13 @@
 package com.clairvoyant.data.scalaxy.reader.text.instances
 
+import com.clairvoyant.data.scalaxy.reader.text.TextToDataFrameReader
 import com.clairvoyant.data.scalaxy.reader.text.formats.JSONTextFormat
 import org.apache.spark.sql.catalyst.json.JSONOptions.*
 import org.apache.spark.sql.functions.{col, explode}
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-implicit object JSONTextToDataFrameReader extends TextFormatToDataFrameReader[JSONTextFormat] {
+implicit object JSONTextToDataFrameReader extends TextToDataFrameReader[JSONTextFormat] {
 
   override def read(
       text: Seq[String],

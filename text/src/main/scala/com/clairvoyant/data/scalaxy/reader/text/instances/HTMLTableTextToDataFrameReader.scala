@@ -11,9 +11,9 @@ import org.jsoup.select.Elements
 import scala.collection.convert.ImplicitConversions.`collection AsScalaIterable`
 import scala.util.Try
 
-implicit object HTMLTableTextToDataFrameReader extends TextFormatToDataFrameReader[HTMLTableTextFormat] {
+implicit object HTMLTableTextToDataFrameReader extends TextToDataFrameReader[HTMLTableTextFormat] {
 
-  val VALUE_SEPARATOR = "~"
+  private val VALUE_SEPARATOR = "~"
 
   override def read(
       text: Seq[String],
@@ -21,7 +21,7 @@ implicit object HTMLTableTextToDataFrameReader extends TextFormatToDataFrameRead
       originalSchema: Option[StructType],
       adaptSchemaColumns: StructType => StructType
   )(using sparkSession: SparkSession): DataFrame =
-    TextToDataFrameReader.read(
+    TextToDataFrameReader[CSVTextFormat].read(
       text = text.map(htmlText => convertHTMLTableToCSV(htmlText, textFormat.tableName)),
       textFormat = CSVTextFormat(
         sep = VALUE_SEPARATOR
@@ -30,7 +30,7 @@ implicit object HTMLTableTextToDataFrameReader extends TextFormatToDataFrameRead
       adaptSchemaColumns = adaptSchemaColumns
     )
 
-  def convertHTMLTableToCSV(htmlText: String, tableName: Option[String] = None): String = {
+  private def convertHTMLTableToCSV(htmlText: String, tableName: Option[String] = None): String = {
     Try {
       val parsedDocument = Jsoup.parse(htmlText)
 
@@ -47,7 +47,7 @@ implicit object HTMLTableTextToDataFrameReader extends TextFormatToDataFrameRead
     }.get
   }
 
-  def getTableFromParsedDocument(parsedDocument: Document, tableName: Option[String]): Element =
+  private def getTableFromParsedDocument(parsedDocument: Document, tableName: Option[String]): Element =
     tableName
       .map { tblName =>
         val tables = parsedDocument.select(tblName)
@@ -58,12 +58,12 @@ implicit object HTMLTableTextToDataFrameReader extends TextFormatToDataFrameRead
       }
       .getOrElse(parsedDocument.getElementsByTag("table").first())
 
-  def getTableHeader(rows: Elements): String =
+  private def getTableHeader(rows: Elements): String =
     Seq(rows.select("th").map(_.text)).flatten
       .mkString(VALUE_SEPARATOR)
       .concat("\n")
 
-  def getTableRows(rows: Elements): String =
+  private def getTableRows(rows: Elements): String =
     Seq(
       rows.map { row =>
         val flattenRows = Seq(row.select("td").map(_.text())).flatten
