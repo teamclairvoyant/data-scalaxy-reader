@@ -13,7 +13,7 @@ implicit object ExcelToDataFrameReader {
       excelFormat: ExcelFormat,
       originalSchema: Option[StructType] = None,
       adaptSchemaColumns: StructType => StructType = identity
-  ) (using sparkSession: SparkSession): DataFrame =
+  )(using sparkSession: SparkSession): DataFrame =
 
     import sparkSession.implicits.*
 
@@ -54,9 +54,9 @@ implicit object ExcelToDataFrameReader {
         Map(
           "maxRowsInMemory" -> excelFormat.maxRowsInMemory,
           "maxByteArraySize" -> excelFormat.maxByteArraySize,
-          "tempFileThreshold" -> excelFormat.tempFileThreshold,
-        ).collect {
-          case (optionName, Some(optionValue)) => (optionName, optionValue.toString)
+          "tempFileThreshold" -> excelFormat.tempFileThreshold
+        ).collect { case (optionName, Some(optionValue)) =>
+          (optionName, optionValue.toString)
         }
       )
 
@@ -71,4 +71,5 @@ implicit object ExcelToDataFrameReader {
         }
       }
       .load(tempExcelFile.getAbsolutePath)
+
 }
