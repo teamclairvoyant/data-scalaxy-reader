@@ -17,3 +17,10 @@ Supported text formats are:
 * HTML Table
 
 Please see the detailed documentation [here](text/README.md).
+
+* Excel
+
+## excel
+
+User can use this library to read the data from an excel file and parse it to the spark dataframe.
+Please see the detailed documentation [here](excel/README.md).
