@@ -80,6 +80,14 @@ val zioConfigDependencies = Seq(
   "dev.zio" %% "zio-config-magnolia" % zioConfigVersion
 ).map(_ excludeAll ("org.scala-lang.modules", "scala-collection-compat"))
 
+val crealyticsDependencies = Seq(
+  "com.crealytics" %% "spark-excel" % "3.4.1_0.19.0"
+).map(_.cross(CrossVersion.for3Use2_13))
+
+val poiDependencies = Seq(
+  "org.apache.poi" % "poi" % "5.2.5"
+)
+
 // ----- MODULE DEPENDENCIES ----- //
 
 val textDependencies =
@@ -87,6 +95,13 @@ val textDependencies =
     jsoupDependencies ++
     sparkDependencies ++
     sparkXMLDependencies ++
+    zioConfigDependencies
+
+val excelDependencies =
+  dataScalaxyTestUtilDependencies ++
+    crealyticsDependencies ++
+    poiDependencies ++
+    sparkDependencies ++
     zioConfigDependencies
 
 // ----- PROJECTS ----- //
@@ -97,9 +112,16 @@ lazy val `data-scalaxy-reader` = (project in file("."))
     publishLocal / skip := true
   )
   .aggregate(`reader-text`)
+  .aggregate(`reader-excel`)
 
 lazy val `reader-text` = (project in file("text"))
   .settings(
     version := "2.0.0",
     libraryDependencies ++= textDependencies
+  )
+
+lazy val `reader-excel` = (project in file("excel"))
+  .settings(
+    version := "1.0.0",
+    libraryDependencies ++= excelDependencies
   )
