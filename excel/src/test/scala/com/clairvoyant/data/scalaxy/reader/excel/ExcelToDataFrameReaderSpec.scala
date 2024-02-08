@@ -48,4 +48,5 @@ class ExcelToDataFrameReaderSpec extends DataFrameReader with DataFrameMatcher {
       ExcelFormat(dataAddress = "'Transactions Report'!A2:G4")
     ) should matchExpectedDataFrame(expectedDF)
   }
+
 }
