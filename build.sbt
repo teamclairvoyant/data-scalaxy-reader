@@ -50,6 +50,8 @@ val scalaParserCombinatorsVersion = "2.3.0"
 val sparkVersion = "3.4.1"
 val sparkXMLVersion = "0.16.0"
 val zioConfigVersion = "4.0.0-RC16"
+val crealyticsVersion = "3.4.1_0.19.0"
+val poiVersion = "5.2.5"
 
 // ----- TOOL DEPENDENCIES ----- //
 
@@ -81,11 +83,11 @@ val zioConfigDependencies = Seq(
 ).map(_ excludeAll ("org.scala-lang.modules", "scala-collection-compat"))
 
 val crealyticsDependencies = Seq(
-  "com.crealytics" %% "spark-excel" % "3.4.1_0.19.0"
+  "com.crealytics" %% "spark-excel" % crealyticsVersion
 ).map(_.cross(CrossVersion.for3Use2_13))
 
 val poiDependencies = Seq(
-  "org.apache.poi" % "poi" % "5.2.5"
+  "org.apache.poi" % "poi" % poiVersion
 )
 
 // ----- MODULE DEPENDENCIES ----- //
@@ -111,8 +113,7 @@ lazy val `data-scalaxy-reader` = (project in file("."))
     publish / skip := true,
     publishLocal / skip := true
   )
-  .aggregate(`reader-text`)
-  .aggregate(`reader-excel`)
+  .aggregate(`reader-text`, `reader-excel`)
 
 lazy val `reader-text` = (project in file("text"))
   .settings(

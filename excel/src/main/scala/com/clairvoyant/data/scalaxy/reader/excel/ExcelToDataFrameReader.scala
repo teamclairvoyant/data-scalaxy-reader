@@ -6,7 +6,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.io.{ByteArrayInputStream, File, FileOutputStream, PrintWriter}
 
-implicit object ExcelToDataFrameReader {
+object ExcelToDataFrameReader {
 
   def read(
       bytes: Array[Byte],
