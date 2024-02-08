@@ -7,3 +7,6 @@ project
 target
 
 docs/build
+.bsp
+.idea
+.DS_Store
