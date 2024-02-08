@@ -5,6 +5,7 @@ This library contains several APIs to read data from various sources of differen
 This library supports below source systems:
 
 * Text
+* Excel
 
 ## text
 
@@ -17,3 +18,8 @@ Supported text formats are:
 * HTML Table
 
 Please see the detailed documentation [here](text/README.md).
+
+## excel
+
+User can use this library to read the data from an excel file and parse it to the spark dataframe.
+Please see the detailed documentation [here](excel/README.md).
